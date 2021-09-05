@@ -1,0 +1,183 @@
+---
+title: The New Blogdown
+author: zjl
+date: '2021-09-05'
+slug: []
+categories:
+  - R
+tags:
+  - R Markdown
+description: ~
+featured_image: ~
+---
+
+<script src="{{< blogdown/postref >}}index.en_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="r-markdown" class="section level2">
+<h2>R Markdown</h2>
+</div>
+<div id="including-plots" class="section level2">
+<h2>Including Plots</h2>
+</div>
+<div id="you-can-also-embed-plots-for-example" class="section level2">
+<h2>You can also embed plots, for example:</h2>
+</div>
+<div id="地图绘制" class="section level1">
+<h1>地图绘制</h1>
+<div id="使用rgdal包读取shp文件" class="section level2">
+<h2>使用rgdal包读取shp文件</h2>
+<div id="加载相应的包" class="section level3">
+<h3>加载相应的包</h3>
+<pre class="r"><code>library(rgdal)
+library(broom)#转化数据格式需要
+library(ggplot2)
+library(cartography)#绘制颜色带的地图
+library(dplyr)
+library(viridis)
+library(geojsonio)
+library(igraph)
+library(ggraph)</code></pre>
+</div>
+<div id="加载相应的数据" class="section level3">
+<h3>加载相应的数据</h3>
+<pre class="r"><code>mydata &lt;- readOGR(&quot;D:\\Mydata\\paper\\data\\县域粤港澳大湾区.shp&quot;,)</code></pre>
+<pre><code>## Warning in OGRSpatialRef(dsn, layer, morphFromESRI = morphFromESRI, dumpSRS
+## = dumpSRS, : Discarded datum Not_specified_based_on_Krassowsky_1940_ellipsoid
+## in Proj4 definition: +proj=aea +lat_0=0 +lon_0=105 +lat_1=25 +lat_2=47 +x_0=0
+## +y_0=0 +ellps=krass +units=m +no_defs</code></pre>
+<pre><code>## OGR data source with driver: ESRI Shapefile 
+## Source: &quot;D:\Mydata\paper\data\县域粤港澳大湾区.shp&quot;, layer: &quot;县域粤港澳大湾区&quot;
+## with 76 features
+## It has 14 fields
+## Integer64 fields read as strings:  OBJECTID</code></pre>
+<pre class="r"><code>summary(mydata)#查看数据描述性统计</code></pre>
+<pre><code>## Object of class SpatialPolygonsDataFrame
+## Coordinates:
+##         min     max
+## x  653064.9 1070542
+## y 2252891.1 2573910
+## Is projected: TRUE 
+## proj4string :
+## [+proj=aea +lat_0=0 +lon_0=105 +lat_1=25 +lat_2=47 +x_0=0 +y_0=0
+## +ellps=krass +units=m +no_defs]
+## Data attributes:
+##    OBJECTID           province             city             Shape_Leng    
+##  Length:76          Length:76          Length:76          Min.   :0.0312  
+##  Class :character   Class :character   Class :character   1st Qu.:0.3889  
+##  Mode  :character   Mode  :character   Mode  :character   Median :1.1522  
+##                                                           Mean   :1.5339  
+##                                                           3rd Qu.:2.5636  
+##                                                           Max.   :6.6190  
+##    Shape_Area          HAILS1980       HAILS1990        HAILS2000     
+##  Min.   :6.689e+05   Min.   : 0.00   Min.   :  0.00   Min.   : 4.285  
+##  1st Qu.:5.912e+07   1st Qu.:12.01   1st Qu.: 12.38   1st Qu.:15.389  
+##  Median :1.885e+08   Median :20.66   Median : 21.25   Median :25.612  
+##  Mean   :7.497e+08   Mean   :26.44   Mean   : 28.45   Mean   :32.832  
+##  3rd Qu.:1.121e+09   3rd Qu.:31.90   3rd Qu.: 37.65   3rd Qu.:47.064  
+##  Max.   :3.631e+09   Max.   :81.62   Max.   :145.34   Max.   :85.945  
+##    HAILS2010        HAILS2015        HAILS2018           L1980         
+##  Min.   : 4.318   Min.   : 4.559   Min.   :  4.125   Min.   :-0.47724  
+##  1st Qu.:16.474   1st Qu.:16.726   1st Qu.: 17.051   1st Qu.: 0.01765  
+##  Median :31.930   Median :32.731   Median : 34.853   Median : 0.28140  
+##  Mean   :37.729   Mean   :39.012   Mean   : 39.938   Mean   : 0.38418  
+##  3rd Qu.:56.530   3rd Qu.:60.353   3rd Qu.: 62.184   3rd Qu.: 0.56821  
+##  Max.   :89.684   Max.   :90.961   Max.   :103.726   Max.   : 2.98899  
+##      CL1980           X1980P       
+##  Min.   :0.0000   Min.   :0.00200  
+##  1st Qu.:0.0000   1st Qu.:0.07175  
+##  Median :0.0000   Median :0.14250  
+##  Mean   :0.2632   Mean   :0.19264  
+##  3rd Qu.:0.0000   3rd Qu.:0.31450  
+##  Max.   :3.0000   Max.   :0.49700</code></pre>
+<pre class="r"><code>length(mydata)#查看属性表长度</code></pre>
+<pre><code>## [1] 76</code></pre>
+</div>
+</div>
+</div>
+<div id="地图绘制-1" class="section level1">
+<h1>地图绘制</h1>
+<div id="使用plot绘制" class="section level2">
+<h2>使用plot绘制</h2>
+<pre class="r"><code>par(mar = c(0,0,0,0))
+plot(mydata)</code></pre>
+<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" />
+## 使用ggplot2包绘制
+使用ggplot2包需要传入dataframe格式的数据，而不是geospatial data，可以使用boom包中的tidy（）函数转化其格式。</p>
+<pre class="r"><code>df &lt;- tidy(mydata,region = &quot;city&quot;)
+ggplot()+
+  geom_polygon(data = df,
+               aes( x = long,
+                    y = lat,
+                    group = group),
+               fill=&quot;#69b3a2&quot;,
+               color=&quot;white&quot;) +
+  theme_void()</code></pre>
+<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>##使用Cartography包绘制颜色渐变的地图</p>
+<pre class="r"><code>attr &lt;- data.frame(mydata$city,mydata$HAILS1980)
+names(attr) &lt;- c(&quot;city&quot;,&quot;value&quot;)
+df2 = left_join(df,attr, by=c(&quot;id&quot;=&quot;city&quot;))
+ggplot() +
+  geom_polygon(data = df2,
+               aes(fill = value,
+                   x = long,
+                   y = lat,
+                   group = group),
+               color=&quot;white&quot;) +
+  theme_void()</code></pre>
+<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+#地图美化</p>
+<pre class="r"><code>p &lt;- ggplot() +
+    geom_polygon(data = df2,
+               aes(fill = value,
+                   x = long,
+                   y = lat,
+                   group = group),
+               color=&quot;white&quot;,
+               size=0, 
+               alpha=0.9)+
+  theme_void()+
+  scale_fill_viridis(trans = &quot;log&quot;,
+                     breaks=c(1,5,10,20,50,100),
+                     name=&quot;Number of intensity of human activities&quot;,
+                     guide = guide_legend( keyheight = unit(3, units = &quot;mm&quot;),
+                                           keywidth=unit(12, units = &quot;mm&quot;),
+                                           label.position = &quot;bottom&quot;,
+                                           title.position = &#39;top&#39;, nrow=1) ) +
+  labs(
+    title = &quot;Guangdong-Hong Kong-Macao Greater Bay Area&quot;,
+    subtitle = &quot;Intensity of human activities per city district&quot;,
+    caption = &quot;Creation: Zheng Jialin | Date: 2021/09/03&quot;
+  ) +
+  theme(
+    text = element_text(color = &quot;#22211d&quot;),
+    plot.background = element_rect(fill = &quot;#f5f5f2&quot;, color = NA),
+    panel.background = element_rect(fill = &quot;#f5f5f2&quot;, color = NA),
+    legend.background = element_rect(fill = &quot;#f5f5f2&quot;, color = NA),
+    plot.title = element_text(size= 22,
+                              hjust=0.01,
+                              color = &quot;#4e4d47&quot;,
+                              margin = margin(b = -0.1,
+                                              t = 0.4,
+                                              l = 2,
+                                              unit = &quot;cm&quot;)),
+    plot.subtitle = element_text(size= 17,
+                                 hjust=0.01,
+                                 color = &quot;#4e4d47&quot;,
+                                 margin = margin(b = -0.1,
+                                                 t = 0.43,
+                                                 l = 2,
+                                                 unit = &quot;cm&quot;)),
+    plot.caption = element_text( size=12, 
+                                 color = &quot;#4e4d47&quot;,
+                                 margin = margin(b = 0.3,
+                                                 r=-99,
+                                                 unit = &quot;cm&quot;)),
+    legend.position = c(0.7, 0.09)
+  )
+p</code></pre>
+<pre><code>## Warning: Transformation introduced infinite values in discrete y-axis</code></pre>
+<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+</div>
